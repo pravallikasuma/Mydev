@@ -4,27 +4,31 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getStockDetails from '@salesforce/apex/stockpriceFetch.getStockDetails';
 
 const columns = [
-      { label: "Stock", fieldName: "symbol", hideDefaultActions: true },
+      { label: "Stock", fieldName: "symbol", hideDefaultActions: true,sortable: true},
       { label: "Price", fieldName: "price", hideDefaultActions: true },
-      { label: "% change", fieldName: "changesPercentage", hideDefaultActions: true,cellAttributes: {
+      { label: "% change", fieldName: "changesPercentage",sortable: true,hideDefaultActions: true,cellAttributes: {
           class: {
               fieldName: 'format'
           },
           alignment: 'left'
       }
 },
-    { label: "Market Cap", fieldName: "marketCap", hideDefaultActions: true },
+    { label: "Market Cap", fieldName: "marketCap", sortable: true,hideDefaultActions: true },
     {
       label: "earningsAnnouncement",
-      fieldName: "earningsAnnouncement",
+      fieldName: "earningsAnnouncement",sortable: true,
       hideDefaultActions: true
     },
-    { label: "PE", fieldName: "pe" }
+    { label: "PE", fieldName: "pe",sortable: true }
     //   { label: "General Ledger",fieldName: "promgt__GeneralLedger__c", hideDefaultActions: true,editable: true  },
   ];
 export default class FetchStocksLWC extends LightningElement {
     columns = columns;    
     @track ListofObj = [];
+    defaultSortDirection = 'asc';
+    sortDirection = 'asc';
+    sortedBy;
+
     async handleConfirmClick() {
         const result = await LightningConfirm.open({
             message: 'do you want to refresh the stock prices?',
@@ -55,7 +59,7 @@ export default class FetchStocksLWC extends LightningElement {
                             
                             const evt = new ShowToastEvent({
                                 title: 'Success',
-                                message: 'stock prices updated successfully!!',
+                                message: 'Stock prices updated successfully!!',
                                 variant: "success"
                               });
                               this.dispatchEvent(evt);
@@ -71,5 +75,31 @@ export default class FetchStocksLWC extends LightningElement {
         }
         //and false if cancel was clicked
     }
+    sortBy(field, reverse, primer) {
+        const key = primer
+            ? function (x) {
+                  return primer(x[field]);
+              }
+            : function (x) {
+                  return x[field];
+              };
+
+        return function (a, b) {
+            a = key(a);
+            b = key(b);
+            return reverse * ((a > b) - (b > a));
+        };
+    }
+
+    onHandleSort(event) {
+        const { fieldName: sortedBy, sortDirection } = event.detail;
+        const cloneData = [...this.ListofObj];
+
+        cloneData.sort(this.sortBy(sortedBy, sortDirection === 'asc' ? 1 : -1));
+        this.ListofObj = cloneData;
+        this.sortDirection = sortDirection;
+        this.sortedBy = sortedBy;
+    }
+
 
 }
