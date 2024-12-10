@@ -4,22 +4,36 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getStockDetails from '@salesforce/apex/stockpriceFetch.getStockDetails';
 
 const columns = [
-      { label: "Stock", fieldName: "symbol", hideDefaultActions: true,sortable: true},
-      { label: "Price", fieldName: "price", hideDefaultActions: true },
+      { label: "Stock", fieldName: "symbol", hideDefaultActions: true,sortable: true,
+        cellAttributes: {
+            style: 'font-weight: bold;' // Apply bold style
+        },
+      },
+      { label: "Price", fieldName: "price", hideDefaultActions: true,cellAttributes: {
+        style: 'font-weight: bold;' // Apply bold style
+},
+},
       { label: "% change", fieldName: "changesPercentage",sortable: true,hideDefaultActions: true,cellAttributes: {
           class: {
               fieldName: 'format'
           },
-          alignment: 'left'
+          alignment: 'left',
+          style: 'font-weight: bold;' // Apply bold style
       }
 },
-    { label: "Market Cap", fieldName: "marketCap", sortable: true,hideDefaultActions: true },
+    { label: "Market Cap", fieldName: "marketCap", sortable: true,hideDefaultActions: true,cellAttributes: {
+        style: 'font-weight: bold;' // Apply bold style
+}, },
     {
       label: "earningsAnnouncement",
-      fieldName: "earningsAnnouncement",sortable: true,
+      fieldName: "earningsAnnouncement",sortable: true,cellAttributes: {
+        style: 'font-weight: bold;' // Apply bold style
+},
       hideDefaultActions: true
     },
-    { label: "PE", fieldName: "pe",sortable: true }
+    { label: "PE", fieldName: "pe",sortable: true,cellAttributes: {
+        style: 'font-weight: bold;' // Apply bold style
+}, }
     //   { label: "General Ledger",fieldName: "promgt__GeneralLedger__c", hideDefaultActions: true,editable: true  },
   ];
 export default class FetchStocksLWC extends LightningElement {

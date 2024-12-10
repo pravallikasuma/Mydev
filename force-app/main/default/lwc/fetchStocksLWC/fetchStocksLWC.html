@@ -1,10 +1,12 @@
+
 <template>
     <lightning-card title="Refresh Stocks">
-    <lightning-button variant="brand" label="Refresh" onclick={handleConfirmClick} class="slds-m-left_x-small"></lightning-button>
+    <lightning-button variant="brand" label="Refresh" onclick={handleConfirmClick} slot="actions"></lightning-button>
 <br/>
     <div style="height: 400px;">
         <lightning-datatable
                 key-field="id"
+                class="table-test"
                 data={ListofObj}
                 hide-checkbox-column="true"
                 default-sort-direction={defaultSortDirection}
