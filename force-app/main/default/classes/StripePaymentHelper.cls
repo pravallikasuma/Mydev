@@ -52,18 +52,22 @@ public with sharing class StripePaymentHelper {
     } 
     //This method is for sending Email to customer
     public static string sendEmailToCustomerForPayment(String paymentURL, String opportunityId){
-        Opportunity opportunity = [SELECT Id, Name,  Account.Name, OwnerId, Owner.Email FROM Opportunity WHERE Id =: opportunityId ];
+        Opportunity opportunity = [SELECT Id, Name,  Account.Name, OwnerId, Owner.Email,Owner.Name  FROM Opportunity WHERE Id =: opportunityId ];
         if (opportunity == null) {
             return 'Error: Opportunity with Id "' + opportunityId + '" not found.';
         }
+        
         // Create the email message 
         Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
         email.setTargetObjectId(opportunity.OwnerId);
         email.setSaveAsActivity(false);
         email.setSubject('Payment Request for: ' + opportunity.Name);
         String customerName = opportunity.Account.Name;
-        email.setPlainTextBody('Dear ' + customerName + ',' + 
-                          '\n\nClick on this link ' + paymentURL + ' to make a payment for your recent purchase of ' + opportunity.Name + '.');
+        String htmlBody = 'Dear ' + customerName + ',<br><br>' +
+        'Click on the button below to make a payment for your recent purchase of ' + opportunity.Name + '.<br><br>' +
+        '<a href="' + paymentURL + '" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">' +
+        'Make Payment</a>'+'<br><br> Regards, <br><br> '+opportunity.Owner.Name;
+        email.setHtmlBody(htmlBody);
         // Send the email
         try{
          Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{email});
